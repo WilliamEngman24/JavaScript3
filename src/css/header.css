@@ -1,0 +1,45 @@
+header {
+
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+
+  background-color: var(--background-color);
+  padding: 40px 20px 20px;
+
+  h1 {
+    margin: 0;
+    color: var(--text-on-dark);
+    font-family: var(--font-display);
+  }
+
+  nav {
+    /* 
+      Clear fix
+      See: https: //developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/display#flow-root
+    */
+    display: flow-root;
+
+    padding-top: 20px;
+
+    a {
+      float: left;
+      display: block;
+      padding: 0 10px;
+      color: var(--text-on-dark);
+      text-decoration: none;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      &.active {
+        color: var(--text-on-dark-active);
+      }
+    }
+  }
+}

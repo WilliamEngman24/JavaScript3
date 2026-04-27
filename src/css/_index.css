@@ -1,0 +1,23 @@
+/* utils/fixes */
+@import './utils/box-sizing.css';
+@import './utils/sticky-footer.css';
+
+/* variables */
+@import './variables.css';
+
+/* basic spacing/sizing/fonts*/
+@import './basics.css';
+
+/* hero-image*/
+@import './hero-image.css';
+
+/* page parts */
+@import './header.css';
+@import './main.css';
+@import './footer.css';
+
+/* styling for lists of pets and pet owners */
+@import './pets-and-owners.css';
+
+@import './forms-and-buttons.css';
+

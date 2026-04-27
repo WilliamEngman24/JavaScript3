@@ -1,0 +1,19 @@
+:root {
+  --background-color: rgb(15, 39, 101);
+  /* 
+    Bump only the lightness channel in OKLCH (perceptually uniform),
+    keeping hue + chroma — so the color gets lighter, not whiter.
+    See: https: //evilmartians.com/chronicles/oklch-in-css-why-quit-rgb-hsl  
+  */
+  --background-color-lighter: oklch(from var(--background-color) calc(l + 0.05) c h);
+
+  --font-body: 'Roboto';
+  --font-display: 'Bitter';
+
+  --text-on-dark: #ddd;
+  --text-on-dark-active: #fff;
+  --link-color: #0e1aa3;
+  --link-color-on-dark: #a1caf2;
+
+  --radius: 7px;
+}

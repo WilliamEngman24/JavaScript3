@@ -1,0 +1,10 @@
+main {
+  padding: 40px 20px;
+  max-width: 900px;
+  /* rough approximation of header height — adjust if header changes */
+  margin: 150px auto 0;
+
+  h2:first-of-type {
+    margin-top: 0;
+  }
+}

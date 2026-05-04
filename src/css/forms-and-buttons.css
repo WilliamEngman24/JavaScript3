@@ -76,30 +76,22 @@ button {
     cursor: not-allowed;
   }
 
-  &[type='submit'] {
+  &[type="submit"] {
     float: right;
     margin-right: 0;
   }
 }
 
-.pet-owners, .pets {
+/* Buttons inside .pet-owners and .pets elements needs another color
+   since they use the same color as the background of those elements */
+.pet-owners,
+.pets {
   button {
-    position: relative;
-    color: black;
-    background-color: white;
+    color: #333;
+    background-color: #ddd;
 
-    &:hover{
-      background-color: rgb(233, 233, 233)
+    &:hover {
+      background-color: #eee;
     }
-  }
-  .btn-edit {
-    position: relative;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-
-  .btn-delete {
-    display: flex;
-    align-items: center;
   }
 }

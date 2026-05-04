@@ -1,66 +1,76 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
-import { useNavigate } from 'react-router';
-
-import deletePetOwner from '../utils/deletePetOwner';
+import { Link, useNavigate } from 'react-router';
 
 import useFetch from '../utils/useFetch';
-import HeroImage from '../parts/HeroImage';
+import deletePetOwner from '../utils/deletePetOwner';
 
+import HeroImage from "../parts/HeroImage";
 
 PetsAndOwners.route = {
   path: '/pets-and-owners',
-  label: 'Pets and Owners',
+  label: 'Pets & owners',
   index: 3
-}
+};
 
 export default function PetsAndOwners() {
 
+  // useNavigate returns a function we can use to navigate to a route
   const navigate = useNavigate();
 
-  const [pets, petOwners, loading, update] = useFetch(
-    '/api/pets',
-    '/api/petOwners'
+  const [petsDataAndMeta, petOwnersDataAndMeta, loading, update] = useFetch(
+    '/api/pets?pagination[pageSize]=100&populate=owner',
+    '/api/pet-owners?pagination[pageSize]=1000'
   );
 
-  if (loading) return;
-  const petsByOwnerId = Object.groupBy(pets, pet => pet.ownerId);
+  if (loading) { return; }
 
-  const ownerlessPets = petsByOwnerId.null ?? [];
+  const { data: pets } = petsDataAndMeta;
+  const { data: petOwners } = petOwnersDataAndMeta;
+
+  //Object.groupBy has construct
+  const petsByOwnerId = Object.groupBy(pets, p => p.owner?.documentId || null);
+  const homelessPets = petsByOwnerId.null ?? [];
 
   return !loading && <>
     <HeroImage
       src="dog-and-owner.webp"
-      alt="Dog and Owner"
-      description="Learn about our pets and their owners!" />
-    <h3> Homeless Pets </h3>
+      alt="A dog and its owner"
+      heading="Pets & owners"
+    />
+    <p>Here we use our own custom hook to load all data.</p>
+
+    <h3>Pets by owner</h3>
+    <section className="pet-owners">
+      {
+        petOwners.map(({ documentId : id, firstName, lastName, email }) => {
+          const ownedPets = petsByOwnerId[id] ?? [];
+          return <div key={id}>
+            <h4>{firstName} { lastName}</h4>
+            <p>{firstName} has the email <a href={`mailto:${email}`}>{email}</a>.</p>
+            <button onClick={() => navigate('/update-owner/' + id)}>Edit {name}</button>
+            <button onClick={() => deletePetOwner(id, update)}>Delete {name}</button>
+            {ownedPets.length === 0 ? <p>{name} has no pets</p> : <>
+              <p>{name} has the pets:</p>
+              <ul>
+                {ownedPets.map(({ documentId : id, name, species }) => {
+                  // if the function body is wrapped in {} we must return explicitly
+                  return <li key={id}>{name} {species}</li>;
+                })}
+              </ul>
+            </>
+            }
+          </div>;
+        })
+      }
+    </section>
+
+    <h3>Homeless pets</h3>
     <section className="pets">
-      {ownerlessPets.map(({ id, name, species }) => <div key={id}>
+      {homelessPets.map(({ documentId : id, name, species }) => <div key={id}>
         <h4>{name}</h4>
-        <p>{name} is a {species}</p>
+        <p>{name} is a {species}.</p>
       </div>)}
     </section>
 
-    <h3> Pet Owners </h3>
-    <section className="pet-owners">
-      {petOwners
-        .map(({ id, name, email }) => {
-        const ownedPets = petsByOwnerId[id] ?? []
-        return <div key={id}>
-          <h4>{name}</h4>
-          <p>{name} has the email <a href={`mailto:${email}`}>{email}</a></p>
-          {ownedPets.length === 0 ? <p>{name} does not own any pets.</p> : <>
-            <p>{name} owns the following pets:</p>
-            <ul>
-              {ownedPets.map(({ id, name, species }) =>  
-                <li key={id}> {name} ({ species }) </li>
-              )}
-            </ul>
-          </>}
-          <button className="btn-edit" onClick={() => navigate('/update-owner/' + id)}> Edit {name} </button>
-          <button className="btn-delete" onClick={() => deletePetOwner(id, pets, update)}>Delete {name}</button>
-        </div>
-      })}
-    </section>
   </>;
 }

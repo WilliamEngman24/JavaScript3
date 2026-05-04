@@ -1,6 +1,6 @@
 import { LoremIpsum } from "lorem-ipsum";
 
-export default function LoremIpsumPage({ paragraphCount }) {
+export default function Lorem({ paragraphCount }) {
 
   const lorem = new LoremIpsum({
     sentencesPerParagraph: {
@@ -13,15 +13,10 @@ export default function LoremIpsumPage({ paragraphCount }) {
     }
   });
 
-  const paragraphs = lorem.generateParagraphs(paragraphCount) .split('\n');
-
-  console.log(paragraphs);
+  const paragraphs = lorem.generateParagraphs(paragraphCount).split('\n');
 
   return <>
-    {paragraphs.map((paragraph, index) => (
-      <p key={index}>
-        {paragraph}
-      </p>
-    ))}
+    {paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)}
   </>;
+
 }

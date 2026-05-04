@@ -1,3 +1,3 @@
-export default function Footer() { 
-  return <footer> &copy; 2026 The Pet Shelter. All rights reserved.</footer>;
+export default function Footer() {
+  return <footer>&copy; The Pet Shelter 2026</footer>;
 }

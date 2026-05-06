@@ -14,7 +14,7 @@ export default function CreatePet() {
     name: '',
     species: '',
 
-    ownerId: '0' // see explanation in sendForm
+    owner: '0' // see explanation in sendForm
   };
 
   const [formData, setFormData] = useState(formInitialState);
@@ -24,11 +24,18 @@ export default function CreatePet() {
 
   console.log(formData);
 
-  const [petOwners, loading] = useFetch('/api/petOwners/');
-  const [unique_species, loading2] = useFetch('/api/unique_species/');
+  const [
+    petOwners,
+    uniqueSpecies,
+    loading
+  ] = useFetch(
+    '/api/pet-owners?pagination[pageSize]=1000&sort=firstName,lastName',
+    '/api/pets/species'
+  );
+  
   const [showSpeciesInput, setShowSpeciesInput] = useState(false);
 
-  if (loading || loading2) return <p>Loading...</p>;
+  if (loading) { return; }
 
   function updateFormData(event) {
     const { name: key, value } = event.target;
@@ -40,10 +47,10 @@ export default function CreatePet() {
     await fetch('/api/pets', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData,
+      body: JSON.stringify({ data: formData },
         // we are using '0' for ownerId since it works well as a value in the form
         // but the database/REST-api wants null so we transofrm
-        (key, value) => key === 'ownerId' && value === '0' ? null : value)
+        (key, value) => key === 'owner' && value === '0' ? null : value)
     });
     setFormSent(true);
   }
@@ -80,10 +87,10 @@ export default function CreatePet() {
         </label>
         <label>
           Species:
-          <select name="unique_species" onChange={setSpecies}>
+          <select name="uniqueSpecies" onChange={setSpecies}>
             <option key="" value="">Select species</option>
             {
-              unique_species.map(spec => <option key={spec.species} value={spec.species}>{spec.species}</option>)
+              uniqueSpecies.map(species => <option key={species} value={species}>{species}</option>)
             }
             <option value="__new__">Other (add new species..)</option>
           </select>
@@ -94,10 +101,14 @@ export default function CreatePet() {
 
         <label>
           Owner:
-          <select name="ownerId" value={formData.ownerId} onChange={updateFormData}>
+          <select name="owner" value={formData.owner} onChange={updateFormData}>
             <option key="0" value="0">No owner</option>
             {
-              petOwners.map(owner => <option key={owner.id} value={owner.id}>{owner.name}</option>)
+              petOwners.map(({ documentId, firstName, lastName }) => <option
+                key={documentId}
+                value={documentId}>
+                {firstName} {lastName}
+              </option>)
             }
           </select>
         </label>

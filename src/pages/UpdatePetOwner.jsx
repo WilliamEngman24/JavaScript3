@@ -3,31 +3,29 @@ import { useNavigate, useParams } from 'react-router';
 import useFetch from '../utils/useFetch';
 
 UpdatePetOwner.route = {
-  path: '/update-owner/:id'
+  path: '/update-owner/:documentId'
 }
 
 export default function UpdatePetOwner() {
 
-  const { id } = useParams()
+  const { documentId } = useParams()
 
   const [formData, setFormData] = useState({
-    id: '',
-    name: '',
+    firstName: '',
+    lastName: '',
     email: ''
   })
 
   const [formSent, setFormSent] = useState(false)
   const navigate = useNavigate()
 
-  const [petOwner, loading] = useFetch('/api/petOwners/' + id)
+  const [petOwner, loading] = useFetch('/api/pet-owners/' + documentId)
+
 
   useEffect(() => {
     if (!loading && petOwner) {
-      setFormData({
-        id: petOwner.id ?? '',
-        name: petOwner.name ?? '',
-        email: petOwner.email ?? ''
-      })
+      const { firstName, lastName, email } = petOwner;
+      setFormData({ firstName, lastName, email });
     }
   }, [loading, petOwner])
 
@@ -42,10 +40,10 @@ export default function UpdatePetOwner() {
 
   async function sendForm(event) {
     event.preventDefault()
-    await fetch('/api/petOwners/' + id, {
+    await fetch('/api/pet-owners/' + documentId, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: JSON.stringify({ data: formData })
     })
     setFormSent(true)
   }
@@ -53,7 +51,7 @@ export default function UpdatePetOwner() {
   if (formSent) {
 
     return <>
-      <p>The pet owner {formData.name} has been updated</p>
+      <p>The pet owner {formData.firstName} has been updated</p>
       <button onClick={() => navigate('/pets-and-owners')}>
         Return to the list of pets and their owners</button>
     </>
@@ -61,11 +59,15 @@ export default function UpdatePetOwner() {
   } else {
 
     return <>
-      <h2>Edit {petOwner.name}</h2>
+      <h2>Edit {petOwner.firstName}</h2>
       <form onSubmit={sendForm}>
         <label>
-          Name:
-          <input name="name" type="text" placeholder="Name" value={formData.name} onChange={updateFormData} />
+          First Name:
+          <input name="firstName" type="text" placeholder="First name..." value={formData.firstName} onChange={updateFormData} />
+        </label>
+        <label>
+          Last Name:
+          <input name="lastName" type="text" placeholder="Last name..." value={formData.lastName} onChange={updateFormData} />
         </label>
         <label>
           Email:

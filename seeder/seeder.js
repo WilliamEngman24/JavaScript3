@@ -9,7 +9,7 @@ import petSpecies from './data/petSpecies.json' with {type: 'json'};
 
 const DELETE_BEFORE_SEEDING = true;
 const NUMBER_OF_PET_OWNERS = 50; // max 200
-const NUMBER_OF_PETS = 200; // max 500
+const NUMBER_OF_PETS = 100; // max 500
 const PETS_WITHOUT_OWNERS_PERCENT = 15;
 const MAX_PETS_PER_OWNER = 4;
 const STRAPI_HOST = "127.0.0.1";
@@ -107,24 +107,40 @@ async function createPets(ownerIds) {
 async function deleteAllPetsAndOwners() { 
 
   const petResponse = await fetch(
-    `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pets?pagination[pageSize]=1000`
+    `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pets?pagination[pageSize]=10000`
   );
   const { data: pets } = await petResponse.json();
 
   const petOwnerResponse = await fetch(
-    `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pet-owners?pagination[pageSize]=1000`
+    `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pet-owners?pagination[pageSize]=10000`
   );
   const { data: petOwners } = await petOwnerResponse.json();
 
+  console.log({ petsLength: pets.length, petOwnersLength: petOwners.length });
+
+  let counter = 1;
+  for (let { documentId } of pets) {
+    await fetch(
+      `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pets/${documentId}`,
+      { method: 'DELETE' }
+    );
+    console.log(`Deleting pet ${counter++}/${pets.length}`);
+  }
+
+  counter = 1;
   for (let { documentId } of petOwners) {
     await fetch(
-      `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pet-pwners/${documentId}`,
-      { metod: 'DELETE' }
+      `http://${STRAPI_HOST}:${STRAPI_PORT}/api/pet-owners/${documentId}`,
+      { method: 'DELETE' }
     );
+    console.log(`Deleting pet owner ${counter++}/${petOwners.length}`);
   }
+
+  console.log('');
+
 }
 
 // run everything
-DELETE_BEFORE_SEEDING && await deleteAllPetsAndOwners;
+DELETE_BEFORE_SEEDING && await deleteAllPetsAndOwners();
 const ownerIds = await createPetOwners();
 createPets(ownerIds);
